@@ -45,6 +45,18 @@ npx cap sync android && cd android && ./gradlew assembleDebug
 npx tauri build        # 需要 Rust
 ```
 
+## 下载
+
+在 [Releases](https://github.com/hitikem/video-paqu/releases) 获取打包好的版本：
+
+| 平台 | 文件 | 说明 |
+|---|---|---|
+| Windows x64 | `VideoPaqu-v1.0.0-Windows-x64-Portable.zip` | 解压后双击 `Start-VideoPaqu.bat`，内置 Node 运行时，免安装 |
+| Android | `VideoPaqu-v1.0.0.apk` | debug 签名，安装时需允许「未知来源」；包名沿用 `com.mori.downloader` 以兼容 JNI |
+
+> Windows 便携版只监听 `127.0.0.1:8787`，不会开放到局域网；关闭启动窗口即停止服务。
+> Android 版如需上架或长期使用，请用你自己的 keystore 重新签名（`assembleRelease`）。
+
 ## HTTP API
 
 服务默认只监听 `127.0.0.1`，所有接口均为同源 JSON。
