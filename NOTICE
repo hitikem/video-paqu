@@ -1,0 +1,62 @@
+视频爬取 (VideoPaqu)
+Copyright (C) 2026 视频爬取 contributors
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+--------------------------------------------------------------------------
+NOTICE — 上游作品与修改说明
+--------------------------------------------------------------------------
+
+本仓库是 Mori 的衍生作品（derivative work），并非原创实现：
+
+    Mori — "Save anything, from anywhere."
+    Copyright (C) 2026 coflyn
+    https://github.com/coflyn/Mori
+    Licensed under GPL-3.0-or-later
+
+依据 GPL-3.0 第 5 条，本仓库保留上游的版权声明与许可证，并在此说明修改。
+上游的原始代码（public/、cli/、android/、ios/、src-tauri/ 等）著作权归 coflyn。
+本项目仅对以下部分作出修改或新增：
+
+1. 新增 server/index.js：
+   - 自托管 Web 服务（静态资源、/api/scrape、/api/resolve、/api/http、/api/download）
+   - SSRF 防护（拒绝内网/回环/链路本地地址）、响应体大小与超时限制
+   - 服务端流式下载，自动补 Referer / User-Agent
+
+2. 修改 public/js/scrapers/httpHelper.js：
+   - 在浏览器（非 Capacitor / 非 Tauri）环境下，把 scraperFetch 路由到 /api/http
+
+3. 修改 public/js/ui/nativeDownload.js：
+   - 纯浏览器环境改为调用 /api/download，而不是直接跳转第三方直链
+
+4. 移除在线热更新（安全加固）：
+   - public/js/scrapers/index.js：不再从 localStorage 加载并 new Function 执行远程补丁
+   - public/js/modules/updateScrapers.js：OTA 默认禁用
+   - cli/engine.js：不再 eval ~/.mori/scrapers-bundle.js；checkForOtaUpdate 直接返回禁用
+   - cli/index.js：移除启动时的静默后台热更新与上游 npm 版本探测
+
+5. 品牌与默认路径：
+   - 界面文案改为「视频爬取」，下载目录改为 Download/VideoPaqu、~/Downloads/VideoPaqu
+   - CLI 配置目录改为 ~/.videopaque
+   - 内部标识符（localStorage 键 mori_*、Android 包名 com.mori.downloader、
+     JavaScript 桥 MoriMainBridge、JNI 符号）保持不变，以维持与现有原生库的兼容
+
+6. 移除未包含在本仓库中的上游内容：
+   - landing/（产品官网）、GUIDE.md、CONTRIBUTING.md、analysis/（分析脚本）
+
+--------------------------------------------------------------------------
+原上游 NOTICE（如上游另有声明，以其为准）
+--------------------------------------------------------------------------
+
+Mori 以 GNU General Public License v3.0 发布，完整文本见 LICENSE。

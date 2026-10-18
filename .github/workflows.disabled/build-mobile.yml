@@ -1,0 +1,55 @@
+name: Build Mobile Release (iOS)
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Build Unsigned iOS IPA
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath build/VideoPaqu.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          mkdir -p Payload
+          cp -r build/VideoPaqu.xcarchive/Products/Applications/App.app Payload/
+          mkdir -p dist-assets
+          zip -r "dist-assets/VideoPaqu-v${VERSION}-iOS-Unsigned.ipa" Payload
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VideoPaqu-iOS-Unsigned-IPA
+          path: dist-assets/*.ipa
+
+      - name: Upload Release Asset (iOS)
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-assets/*.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

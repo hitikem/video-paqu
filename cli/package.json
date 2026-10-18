@@ -1,0 +1,49 @@
+{
+  "name": "@coflyn/mori",
+  "version": "1.0.0",
+  "description": "Universal media downloader CLI. Save anything, from anywhere. No watermarks. No tracking.",
+  "type": "module",
+  "bin": {
+    "mori": "index.js"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "engine.js",
+    "bundle.js",
+    "scrapers-version.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "coflyn",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coflyn/Mori.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/coflyn/Mori#readme",
+  "keywords": [
+    "downloader",
+    "tiktok",
+    "instagram",
+    "youtube",
+    "twitter",
+    "spotify",
+    "cli",
+    "media-downloader",
+    "video-downloader"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "linkedom": "^0.18.5",
+    "picocolors": "^1.1.1"
+  }
+}

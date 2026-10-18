@@ -1,0 +1,58 @@
+{
+  "name": "video-paqu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "视频爬取（VideoPaqu）— 自托管的多平台视频 / 音频 / 图集下载工具。基于 Mori（GPL-3.0）的衍生版本。",
+  "type": "module",
+  "main": "server/index.js",
+  "workspaces": [
+    "cli"
+  ],
+  "scripts": {
+    "start": "node server/index.js",
+    "serve": "node server/index.js",
+    "cli": "node cli/index.js",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "build:android": "npx cap sync android && cd android && ./gradlew assembleDebug",
+    "build:android:release": "npx cap sync android && cd android && ./gradlew assembleRelease"
+  },
+  "keywords": [
+    "video-downloader",
+    "self-hosted",
+    "scraper",
+    "tiktok",
+    "youtube",
+    "bilibili"
+  ],
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@capacitor-community/media": "^8.0.1",
+    "@capacitor/android": "^7.6.8",
+    "@capacitor/app": "^7.1.2",
+    "@capacitor/cli": "^7.6.8",
+    "@capacitor/clipboard": "^7.0.4",
+    "@capacitor/core": "^7.6.8",
+    "@capacitor/filesystem": "^7.1.8",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/ios": "^7.6.8",
+    "@capacitor/network": "^7.0.4",
+    "@capacitor/share": "^7.0.4",
+    "@capgo/capacitor-native-biometric": "^7.6.0",
+    "axios": "^1.16.0",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "fflate": "^0.8.3",
+    "form-data": "^4.0.6",
+    "linkedom": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "esbuild": "^0.28.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

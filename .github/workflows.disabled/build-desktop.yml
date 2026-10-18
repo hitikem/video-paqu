@@ -1,0 +1,78 @@
+name: Build Desktop Release (Windows & macOS)
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+          - platform: "macos-latest"
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        run: npm ci || npm install
+
+      - name: Build Tauri App
+        run: npx tauri build
+
+      - name: Prepare & Rename Release Assets (macOS)
+        if: matrix.platform == 'macos-latest'
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir -p dist-assets
+
+          rm -rf /tmp/dmg_build && mkdir -p /tmp/dmg_build
+          cp -r "src-tauri/target/release/bundle/macos/VideoPaqu.app" /tmp/dmg_build/
+          cp "src-tauri/README.txt" /tmp/dmg_build/
+          ln -s /Applications /tmp/dmg_build/Applications
+          hdiutil create -volname "VideoPaqu" -srcfolder /tmp/dmg_build -ov -format UDZO "dist-assets/VideoPaqu-v${VERSION}-macOS-arm64.dmg"
+          rm -rf /tmp/dmg_build
+
+          tar -czf "dist-assets/VideoPaqu-v${VERSION}-macOS-arm64.app.tar.gz" -C src-tauri/target/release/bundle/macos VideoPaqu.app
+
+      - name: Prepare & Rename Release Assets (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir -p dist-assets
+          find src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "dist-assets/VideoPaqu-v${VERSION}-Windows-x64-Setup.exe" \;
+          find src-tauri/target/release/bundle/msi -name "*.msi" -exec cp {} "dist-assets/VideoPaqu-v${VERSION}-Windows-x64.msi" \;
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-assets/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
